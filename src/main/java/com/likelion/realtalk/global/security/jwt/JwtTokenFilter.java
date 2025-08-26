@@ -82,7 +82,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             // 4. WebSocket 관련 경로
             || path.startsWith("/test/webrtc")
-            || path.startsWith("/signal");
+            || path.startsWith("/signal")
+            || path.equals("/api/debate-rooms/all");
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {

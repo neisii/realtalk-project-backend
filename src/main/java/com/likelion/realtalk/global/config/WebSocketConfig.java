@@ -1,8 +1,12 @@
 package com.likelion.realtalk.global.config;
 
-import java.util.List;
-import java.util.UUID;
-
+import com.likelion.realtalk.domain.debate.auth.AuthUserPrincipal;
+import com.likelion.realtalk.domain.debate.auth.GuestPrincipal;
+import com.likelion.realtalk.domain.webrtc.handler.SignalingHandler;
+import com.likelion.realtalk.global.security.jwt.JwtProvider;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -19,13 +23,6 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import com.likelion.realtalk.domain.debate.auth.AuthUserPrincipal;
-import com.likelion.realtalk.domain.debate.auth.GuestPrincipal;
-import com.likelion.realtalk.domain.webrtc.handler.SignalingHandler;
-import com.likelion.realtalk.global.security.jwt.JwtProvider;
-
-import lombok.RequiredArgsConstructor;
-
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
@@ -34,7 +31,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer, WebSoc
   private final SignalingHandler signalingHandler;
 
 
-  private final JwtProvider jwt;  
+  private final JwtProvider jwt;
+  private static final Logger log = LoggerFactory.getLogger(WebSocketConfig.class);
 
   // public WebSocketConfig(SignalingHandler signalingHandler) {
   //   this.signalingHandler = signalingHandler;
@@ -109,6 +107,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer, WebSoc
                     System.out.println("[STOMP][DBG] set GuestPrincipal (unauthenticated)");
                 }
             }
+
+              // :dart: 사용자 메시지 로깅
+              if (StompCommand.SEND.equals(acc.getCommand())) {
+                String destination = acc.getDestination();
+                String payload = new String((byte[]) message.getPayload());
+                Object user = (acc.getUser() != null ? acc.getUser().toString() : "anonymous");
+
+                log.info("[STOMP][SEND] user={}, dest={}, payload={}",
+                    user, destination, payload);
+              }
+
             return message;
             }
             private String first(java.util.List<String> list) { return (list != null && !list.isEmpty()) ? list.get(0) : null; }
