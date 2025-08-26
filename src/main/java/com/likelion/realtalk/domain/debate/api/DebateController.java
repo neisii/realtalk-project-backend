@@ -97,6 +97,8 @@ public class DebateController {
         UUID roomUuid = req.getRoomId();
         String sessionId = header.getSessionId();
 
+        log.info("k6 로그: {} {}", roomUuid.toString(), sessionId);
+
         // 1) Principal 꺼내기 (RoomPrincipal 기준으로 인증 판정)
         Object userObj = header.getUser();
         org.springframework.security.core.Authentication auth =
