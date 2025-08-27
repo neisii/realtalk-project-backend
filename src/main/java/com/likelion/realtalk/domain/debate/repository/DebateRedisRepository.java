@@ -150,6 +150,12 @@ public class DebateRedisRepository {
         }).filter(Objects::nonNull).collect(Collectors.toList());
   }
 
+  public Long getAudienceCount(Long roomId) {
+    // audience 조회
+    return redisTemplate.opsForSet()
+        .size(RedisKeyUtil.getAudienceKey(roomId));
+  }
+
   public RoomUserInfo getSpeaker(Long roomId, Long userId) {
     Map<Object, Object> waitingUsers = redisTemplate.opsForHash()
         .entries(RedisKeyUtil.getWaitingUsers(roomId));

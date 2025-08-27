@@ -1,5 +1,6 @@
 package com.likelion.realtalk.domain.debate.api;
 
+import com.likelion.realtalk.domain.debate.dto.AudienceCountDto;
 import com.likelion.realtalk.domain.debate.dto.DebateRoomMatchRequest;
 import com.likelion.realtalk.domain.debate.dto.DebatestartResponse;
 import com.likelion.realtalk.domain.debate.dto.DebateRoomTimerDto;
@@ -282,5 +283,10 @@ public class DebateController {
     public ResponseEntity<DebateRoomResponse> match(@RequestBody DebateRoomMatchRequest request) {
         DebateRoomResponse response = debateRoomMatchService.matchOne(request.categoryId());
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{roomUUID}/audiences/count")
+    public ResponseEntity<AudienceCountDto> getAudienceCount(@PathVariable String roomUUID) {
+        return ResponseEntity.ok(debateRoomService.getAudienceCount(roomUUID));
     }
 }
