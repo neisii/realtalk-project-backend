@@ -30,6 +30,10 @@ public class RedisKeyUtil {
     return "debateRoom:" + roomId + ":speakers";
   }
 
+  public static String getAudienceKey(Long roomId) {
+    return "debateRoom:" + roomId + ":audiences";
+  }
+
   public static String getWaitingUsers(Long roomId) {
     return "debateRoom:" + roomId + ":waitingUsers";
   }
