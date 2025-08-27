@@ -3,6 +3,7 @@ package com.likelion.realtalk.domain.debate.service;
 import com.likelion.realtalk.domain.category.entity.Category;
 import com.likelion.realtalk.domain.category.repository.CategoryRepository;
 import com.likelion.realtalk.domain.debate.auth.AuthUserPrincipal;
+import com.likelion.realtalk.domain.debate.dto.AudienceCountDto;
 import com.likelion.realtalk.domain.debate.dto.DebateRoomDto;
 import com.likelion.realtalk.domain.debate.dto.DebateRoomTimerDto;
 import com.likelion.realtalk.domain.debate.dto.DebatestartResponse;
@@ -355,5 +356,11 @@ public class DebateRoomService {
   public DebateRoomTimerDto getDebateRoomExpireTime(String roomUUID) {
     return DebateRoomTimerDto.builder().debateExpireTime(
         debateRedisRepository.getRedisValue(RedisKeyUtil.getDebateRoomExpire(roomUUID))).build();
+  }
+
+  public AudienceCountDto getAudienceCount(String roomUUID) {
+    Long roomId = roomIdMappingService.toPk(UUID.fromString(roomUUID));
+
+    return AudienceCountDto.builder().audienceCount(debateRedisRepository.getAudienceCount(roomId)).build();
   }
 }
