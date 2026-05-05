@@ -10,7 +10,7 @@ const DEBUG = (__ENV.DEBUG || '').toLowerCase() === 'true';
 export let options = {
   vus: __ENV.VUS ? parseInt(__ENV.VUS, 10) : 20,
   duration: __ENV.DUR || '30s',
-  thresholds: { 'join_accepted': ['rate>0.95'] },
+  thresholds: { 'join_accepted': ['rate>0.99'] },
 };
 
 export default function () {

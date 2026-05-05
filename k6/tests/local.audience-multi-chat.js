@@ -9,8 +9,8 @@ export const options = {
   vus: (__ENV.VUS && parseInt(__ENV.VUS, 10)) || randomIntBetween(5, 20), // 1~2자리 랜덤
   duration: __ENV.DUR || '40s',                                           // 전체 실행시간
   thresholds: {
-    'join_accepted': ['rate>0.95'],
-    'chat_echoed':   ['rate>0.90'],
+    'join_accepted': ['rate>0.99'],
+    'chat_echoed':   ['rate>0.99'],
   },
 };
 

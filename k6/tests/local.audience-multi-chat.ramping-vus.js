@@ -46,8 +46,8 @@ export const options = {
     },
   },
   thresholds: {
-    'join_accepted': ['rate>0.95'],
-    'chat_echoed':   ['rate>0.90'],
+    'join_accepted': ['rate>0.99'],
+    'chat_echoed':   ['rate>0.99'],
   },
 };
 
