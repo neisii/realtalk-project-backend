@@ -2,6 +2,16 @@ spring:
   application:
     name: realtalk
 
+  threads:
+    virtual:
+      enabled: true
+
+  task:
+    scheduling:
+      thread-name-prefix: scheduler-
+      pool:
+        size: 5
+
   ai:
     anthropic:
       api-key: ${ANTHROPIC_API_KEY}
@@ -24,6 +34,7 @@ spring:
     password: ${MYSQL_PASSWORD}
 
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: validate
     properties:

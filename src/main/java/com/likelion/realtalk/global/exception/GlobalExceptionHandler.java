@@ -1,77 +1,48 @@
 package com.likelion.realtalk.global.exception;
 
-
-import com.likelion.realtalk.global.common.response.ErrorResponse;
+import com.likelion.realtalk.global.common.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
-
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler {
 
-    /** 1) 잘못된 요청 */
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
-        log.warn("잘못된 요청: {}", ex.getMessage());
-        return ResponseEntity.badRequest().body("잘못된 요청입니다: " + ex.getMessage());
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ApiResponse<Void>> handleCustomException(CustomException e) {
+        ErrorCode code = e.getErrorCode();
+        return ResponseEntity.status(code.getStatus())
+                .body(new ApiResponse<>(false, code.getStatus(), code.getMessage(), code.name(), null));
     }
 
-    @ExceptionHandler(DataRetrievalException.class)
-    public ResponseEntity<ErrorResponse> handleDataRetrievalException(DataRetrievalException e) {
-        log.error("데이터 조회 오류: {}", e.getMessage());
-        return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(
-            ErrorResponse.of(e.getErrorCode())
-        );
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<Void>> handleValidation(MethodArgumentNotValidException e) {
+        String message = e.getBindingResult().getFieldErrors().stream()
+                .map(FieldError::getDefaultMessage)
+                .findFirst()
+                .orElse(ErrorCode.INVALID_INPUT.getMessage());
+        return ResponseEntity.badRequest()
+                .body(new ApiResponse<>(false, 400, message, ErrorCode.INVALID_INPUT.name(), null));
     }
 
-    @ExceptionHandler(DebateRoomValidationException.class)
-    public ResponseEntity<ErrorResponse> handleDebateRoomValidationException(DebateRoomValidationException e) {
-        log.error("토론방 유효성 오류: {}", e.getMessage());
-        return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(
-            ErrorResponse.of(e.getErrorCode())
-        );
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMessageNotReadable(HttpMessageNotReadableException e) {
+        return ResponseEntity.badRequest()
+                .body(new ApiResponse<>(false, 400,
+                        ErrorCode.INVALID_INPUT.getMessage(), ErrorCode.INVALID_INPUT.name(), null));
     }
 
-    /** 2) 예상치 못한 모든 예외 */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception ex) {
-        log.error("서버 내부 오류 발생: ", ex);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("서버 오류가 발생했습니다.");
+    public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
+        log.error("Unhandled exception", e);
+        return ResponseEntity.status(500)
+                .body(new ApiResponse<>(false, 500,
+                        ErrorCode.INTERNAL_SERVER_ERROR.getMessage(),
+                        ErrorCode.INTERNAL_SERVER_ERROR.name(), null));
     }
-
-    /** 3) @Valid 검증 실패 (Spring 6 시그니처) */
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex,
-            HttpHeaders headers,
-            HttpStatusCode status,
-            WebRequest request) {
-
-        String errorMessage = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(err -> err.getField() + ": " + err.getDefaultMessage())
-                .collect(Collectors.joining(", "));
-
-        log.warn("유효성 검증 실패: {}", errorMessage);
-        return ResponseEntity.badRequest().body("입력값이 유효하지 않습니다: " + errorMessage);
-    }
-
-    // 필요 시 커스텀 예외 핸들러 추가 (예: RoomNotFoundException)
-    // @ExceptionHandler(RoomNotFoundException.class)
-    // public ResponseEntity<String> handleRoomNotFoundException(RoomNotFoundException ex) {
-    //     log.warn("토론방을 찾을 수 없습니다: {}", ex.getMessage());
-    //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("토론방이 존재하지 않습니다.");
-    // }
 }
