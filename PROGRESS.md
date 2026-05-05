@@ -1,9 +1,9 @@
 ## 현재 상태
-2단계 시작 전 대기 중
+3단계 시작 전 대기 중
 
 ## 완료된 단계
 - [x] 1단계: 프로젝트 기반 (build.gradle, application.yml, global/)
-- [ ] 2단계: 도메인 레이어 (엔티티, JPA Repository, DebateRedisRepository)
+- [x] 2단계: 도메인 레이어 (엔티티, JPA Repository, DebateRedisRepository)
 - [ ] 3단계: 인증
 - [ ] 4단계: 핵심 실시간 인프라
 - [ ] 5단계: 비동기 파이프라인
