@@ -19,6 +19,7 @@ public enum ErrorCode {
     DEBATE_ROOM_NOT_FOUND(404, "토론 방을 찾을 수 없습니다."),
     ROOM_ALREADY_STARTED(409, "이미 시작된 토론 방입니다."),
     ROOM_ALREADY_ENDED(409, "이미 종료된 토론 방입니다."),
+    ROOM_NOT_ENDED(409, "아직 종료되지 않은 토론입니다."),
     ROOM_FULL(409, "정원이 초과되었습니다."),
     INSUFFICIENT_SPEAKERS(422, "발언자가 없어 토론을 시작할 수 없습니다."),
 
