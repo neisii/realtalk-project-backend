@@ -20,7 +20,7 @@ spring:
           model: claude-3-5-haiku-20241022
 
   config:
-    import: optional:file:..env[.properties]
+    import: optional:file:.env[.properties]
 
   data:
     redis:
