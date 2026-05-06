@@ -1,5 +1,12 @@
 package com.likelion.realtalk.global.config;
 
+import com.likelion.realtalk.domain.oauth.handler.OAuth2FailureHandler;
+import com.likelion.realtalk.domain.oauth.handler.OAuth2SuccessHandler;
+import com.likelion.realtalk.domain.oauth.service.CustomOAuth2UserService;
+import com.likelion.realtalk.global.security.jwt.JwtAuthenticationFilter;
+import com.likelion.realtalk.global.security.jwt.JwtProvider;
+import com.likelion.realtalk.infra.redis.DebateRedisRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +18,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -19,10 +27,22 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtProvider jwtProvider;
+    private final DebateRedisRepository debateRedisRepository;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2FailureHandler oAuth2FailureHandler;
 
     @Value("${frontend.url}")
     private String frontendUrl;
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtProvider, debateRedisRepository);
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -53,10 +73,11 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> {
-                    // OAuth2 Success/Failure Handler는 3단계(인증)에서 등록
-                });
-
-        // JWT Filter는 3단계(인증)에서 등록
+                    oauth2.userInfoEndpoint(u -> u.userService(customOAuth2UserService));
+                    oauth2.successHandler(oAuth2SuccessHandler);
+                    oauth2.failureHandler(oAuth2FailureHandler);
+                })
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
