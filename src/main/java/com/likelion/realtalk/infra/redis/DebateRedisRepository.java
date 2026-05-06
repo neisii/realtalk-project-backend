@@ -188,6 +188,21 @@ public class DebateRedisRepository {
         return rooms != null ? rooms : Collections.emptySet();
     }
 
+    // ── 세션 → 방 매핑 (disconnect 시 역조회용) ───────────────────
+
+    public void setSessionRoom(String sessionId, String roomUuid) {
+        redisTemplate.opsForValue().set("session:" + sessionId + ":room", roomUuid,
+                ROOM_TTL_HOURS, TimeUnit.HOURS);
+    }
+
+    public Optional<String> getSessionRoom(String sessionId) {
+        return Optional.ofNullable(redisTemplate.opsForValue().get("session:" + sessionId + ":room"));
+    }
+
+    public void removeSessionRoom(String sessionId) {
+        redisTemplate.delete("session:" + sessionId + ":room");
+    }
+
     // ── JWT 블랙리스트 ────────────────────────────────────────
 
     public void blacklistJti(String jti, long ttlSeconds) {
