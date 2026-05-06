@@ -56,12 +56,10 @@ docker run -d --name "${CONTAINER_NAME}" \
   -e KAKAO_CLIENT_SECRET="${KAKAO_CLIENT_SECRET}" \
   -e GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID}" \
   -e GOOGLE_CLIENT_SECRET="${GOOGLE_CLIENT_SECRET}" \
-  -e GOOGLE_CLIENT_NAME="${GOOGLE_CLIENT_NAME}" \
   -e JWT_SECRET="${JWT_SECRET}" \
   -e BASE_URL="${BASE_URL}" \
   -e FRONTEND_URL="${FRONTEND_URL}" \
-  --mount type=volume,src=gcp-keys,dst=/keys,readonly \
-  -e GCP_KEY_PATH="${GCP_KEY_PATH}" \
+  -e GCP_CREDENTIALS_JSON="${GCP_CREDENTIALS_JSON}" \
   "${IMAGE}"
 
 
@@ -103,12 +101,10 @@ if [[ "${FINAL_OK}" != true ]]; then
       -e KAKAO_CLIENT_SECRET="${KAKAO_CLIENT_SECRET}" \
       -e GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID}" \
       -e GOOGLE_CLIENT_SECRET="${GOOGLE_CLIENT_SECRET}" \
-      -e GOOGLE_CLIENT_NAME="${GOOGLE_CLIENT_NAME}" \
       -e JWT_SECRET="${JWT_SECRET}" \
       -e BASE_URL="${BASE_URL}" \
       -e FRONTEND_URL="${FRONTEND_URL}" \
-      --mount type=volume,src=gcp-keys,dst=/keys,readonly \
-      -e GCP_KEY_PATH="${GCP_KEY_PATH}" \
+      -e GCP_CREDENTIALS_JSON="${GCP_CREDENTIALS_JSON}" \
       "${PREV_IMAGE_ID}"
 
 
