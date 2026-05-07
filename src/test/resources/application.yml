@@ -1,0 +1,45 @@
+frontend:
+  url: http://localhost:3000
+
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: test-google-client
+            client-secret: test-google-secret
+            scope: profile,email
+            redirect-uri: http://localhost/login/oauth2/code/google
+            client-name: google
+          kakao:
+            client-id: test-kakao-client
+            client-secret: test-kakao-secret
+            scope: profile_nickname
+            redirect-uri: http://localhost/login/oauth2/code/kakao
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            client-name: kakao
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+  ai:
+    anthropic:
+      api-key: test-anthropic-key
+  flyway:
+    enabled: false
+
+jwt:
+  secret: test-secret-key-at-least-32-characters-long-here
+  access-token-expiry: 3600000
+  refresh-token-expiry: 1209600000
+
+gcp:
+  credentials-json: ""
