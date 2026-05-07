@@ -129,6 +129,38 @@ curl http://localhost:8080/actuator/health
 
 ---
 
+## 테스트 자동화
+
+### 실행
+
+```bash
+./gradlew test          # 전체 (단위 + 슬라이스 + 통합)
+./gradlew test --tests "*.DebateRoomRepositoryIT"   # 통합 테스트만
+```
+
+3층으로 구성되어 있으며 총 52개 케이스를 커버한다.
+
+| 층 | 대상 | 케이스 | 외부 의존성 |
+|---|---|---|---|
+| 1층 단위 | JwtProvider, SpeakerService, DebateResultService | 17 | 없음 |
+| 2층 슬라이스 | DebateRoomController, DebateTopicController, DebateResultController | 18 | 없음 |
+| 3층 통합 | DebateRoomRepository (Flyway 검증 포함), DebateRedisRepository | 17 | **Docker 필수** |
+
+### 통합 테스트 사전 설정 (Docker Desktop 4.x)
+
+Docker Desktop 4.x는 Docker API 1.40 이상만 지원하지만 Testcontainers의 기본 클라이언트는 1.32를 사용한다. 아래 파일을 생성하면 자동으로 해결된다.
+
+```bash
+cat >> ~/.testcontainers.properties << 'EOF'
+docker.client.strategy=com.likelion.realtalk.support.HighVersionDockerStrategy
+ryuk.container.privileged=false
+EOF
+```
+
+> 이 설정이 없으면 통합 테스트가 "Could not find a valid Docker environment" 오류와 함께 실패한다.
+
+---
+
 ## API 문서
 
 서버 기동 후 브라우저에서 접근:
@@ -201,3 +233,7 @@ Hibernate가 DB 스키마와 엔티티 불일치를 감지했다. `MYSQL_DATABAS
 **CORS 오류 (브라우저 콘솔)**
 
 `FRONTEND_URL`이 실제 프론트엔드 주소와 다르다. 로컬 개발 시 `http://localhost:3000`으로 맞춘다.
+
+**`Could not find a valid Docker environment` (테스트 실행 시)**
+
+통합 테스트가 Docker Desktop 4.x에서 실패한다. [통합 테스트 사전 설정](#통합-테스트-사전-설정-docker-desktop-4x)을 참조해 `~/.testcontainers.properties`를 설정한다.
