@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -21,6 +22,7 @@ public class GcpConfig {
     private String credentialsJson;
 
     @Bean
+    @Lazy
     public SpeechClient speechClient() throws IOException {
         if (credentialsJson == null || credentialsJson.isBlank()) {
             log.info("GCP_CREDENTIALS_JSON not set — using Application Default Credentials");

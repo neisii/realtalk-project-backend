@@ -63,6 +63,13 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+
+	// Testcontainers (3층 통합 테스트)
+	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'org.testcontainers:mysql'
+	// docker-java-core: DOCKER_API_VERSION 환경변수 읽기 위해 필요 (Docker Desktop 4.x+ 호환)
+	testImplementation 'com.github.docker-java:docker-java-core:3.4.2'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	// ShedLock (분산 스케줄 락)
@@ -95,4 +102,8 @@ dependencyManagement {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	// Docker Desktop 4.x (API 1.40+) 대응 — docker-java 기본 API 1.32 오버라이드
+	environment "DOCKER_API_VERSION", "1.44"
+	environment "DOCKER_HOST", "unix:///var/run/docker.sock"
+	environment "TESTCONTAINERS_RYUK_DISABLED", "false"
 }
